@@ -13,6 +13,7 @@ public class FileService {
     @Autowired
     private FileRepository fileRepository;
 
+    // paginate
     public List<FileInfo> getAllFiles() {
         List<FileInfo> fileInfoList = fileRepository.findAll();
         return fileInfoList;
