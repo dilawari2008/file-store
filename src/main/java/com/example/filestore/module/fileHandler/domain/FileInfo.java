@@ -14,17 +14,18 @@ public class FileInfo {
     private String fileType;
     private String userName;
     private Date uploadTime;
-    private String fileUrl;
+    private String bucketName;
+    private Boolean deleted;
 
     public FileInfo() {
     }
 
-    public FileInfo(String fileName, String fileType, String userName, Date uploadTime, String fileUrl) {
+    public FileInfo(String fileName, String fileType, String userName, Date uploadTime, String bucketName) {
         this.fileName = fileName;
         this.fileType = fileType;
         this.userName = userName;
         this.uploadTime = uploadTime;
-        this.fileUrl = fileUrl;
+        this.bucketName = bucketName;
     }
 
     public Long getId() {
@@ -67,23 +68,33 @@ public class FileInfo {
         this.uploadTime = uploadTime;
     }
 
-    public String getFileUrl() {
-        return fileUrl;
+    public String getBucketName() {
+        return bucketName;
     }
 
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override
     public String toString() {
-        return "fileInfo{" +
+        return "FileInfo{" +
                 "id=" + id +
                 ", fileName='" + fileName + '\'' +
                 ", fileType='" + fileType + '\'' +
                 ", userName='" + userName + '\'' +
                 ", uploadTime=" + uploadTime +
-                ", fileUrl='" + fileUrl + '\'' +
+                ", fileUrl='" + bucketName + '\'' +
+                ", deleted=" + deleted +
                 '}';
     }
 }
