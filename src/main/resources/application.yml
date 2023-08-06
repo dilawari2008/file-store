@@ -1,0 +1,37 @@
+#postgre AutoConfig
+server:
+  port: ${PORT}
+
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+#hibernate and JPA autoConfig
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: true
+    hibernate:
+      ddl-auto: update
+
+# AWS
+aws:
+  access:
+    key:
+      id: ${S3_ACCESS_KEY}
+  secret:
+    access:
+      key: ${S3_SECRET_KEY}
+  s3:
+    region: ${S3_REGION}
+    bucket:
+      name: ${S3_BUCKET_NAME}
+
+#File
+download:
+  directory: ${FILE_DOWNLOAD_DIRECTORY}
