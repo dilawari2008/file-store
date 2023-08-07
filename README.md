@@ -1,7 +1,8 @@
-###Large File Uploader
-Can upload files upto 1GB
+# Large File Uploader
+### Can upload files upto 1GB
 
 TODOs
+
 write a v2 for upload
 file size limit
 take environment variables out
