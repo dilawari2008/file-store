@@ -8,15 +8,15 @@ spring-boot:
   # Set initial heap size
   # jvmArguments: -Xms512m
   # Set maximum heap size
-    jvmArguments: -Xmx4096m
+    jvmArguments: ${MAX_JVM_MEMORY}
 
 spring:
   servlet:
     multipart:
       # 1 GB
-      max-file-size: 1073741824
+      max-file-size: ${MAX_FILE_SIZE}
       #4 GB
-      max-request-size: 4294967296
+      max-request-size: ${MAX_REQUEST_SIZE}
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
