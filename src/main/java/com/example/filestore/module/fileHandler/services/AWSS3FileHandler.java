@@ -2,16 +2,18 @@ package com.example.filestore.module.fileHandler.services;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AWSS3FileHandler {
@@ -21,19 +23,26 @@ public class AWSS3FileHandler {
     @Autowired
     private AmazonS3 amazonS3;
 
-    public PutObjectResult upload(
+    public void upload(
             String bucketName,
             String key,
-            Optional<Map<String, String>> optionalMetaData,
+            ObjectMetadata objectMetadata,
             InputStream inputStream) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-
-        optionalMetaData.ifPresent(map -> {
-            if (!map.isEmpty()) {
-                map.forEach(objectMetadata::addUserMetadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, inputStream, objectMetadata);
+        TransferManager transferManager = TransferManagerBuilder.standard()
+                .withS3Client(amazonS3)
+                .build();
+        try {
+            log.info("(upload) Queued file for upload");
+            Upload upload = transferManager.upload(putObjectRequest);
+            upload.waitForCompletion();
+            if(upload.isDone()) {
+                log.info("(upload) File Upload Completed");
             }
-        });
-        return amazonS3.putObject(bucketName, key, inputStream, objectMetadata);
+        } catch (InterruptedException e) {
+            log.error("(upload) Interrupted Exception", e.getStackTrace());
+        }
+        //return amazonS3.putObject(bucketName, key, inputStream, objectMetadata);
     }
 
     public S3Object download(String bucketName, String key) {
