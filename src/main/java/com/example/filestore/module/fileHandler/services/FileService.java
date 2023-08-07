@@ -1,5 +1,6 @@
 package com.example.filestore.module.fileHandler.services;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -45,15 +46,20 @@ public class FileService {
         if (multipartFile.isEmpty())
             throw new IllegalStateException("Cannot upload empty file");
 
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("Content-Type", multipartFile.getContentType());
-        metadata.put("Content-Length", String.valueOf(multipartFile.getSize()));
+        log.info("(uploadFile) File size (in bytes) : " + multipartFile.getSize());
+
+        log.info("(uploadFile) multipartFile.getSize() : "+ multipartFile.getSize());
+        log.info("(uploadFile) multipartFile.getInputStream().available() : "+ multipartFile.getInputStream().available());
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(multipartFile.getSize());
+        metadata.setContentType(multipartFile.getContentType());
 
         String fileName = String.format("%s", multipartFile.getOriginalFilename());
 
         // Uploading file to s3
-        PutObjectResult putObjectResult = awss3FileHandler.upload(
-                bucketName, fileName, Optional.of(metadata), multipartFile.getInputStream());
+        /*PutObjectResult putObjectResult = */awss3FileHandler.upload(
+                bucketName, fileName, metadata, multipartFile.getInputStream());
 
         //log this object - putObjectResult
 
