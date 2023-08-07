@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.TransferProgress;
 import com.amazonaws.services.s3.transfer.Upload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class AWSS3FileHandler {
     @Autowired
     private AmazonS3 amazonS3;
 
+
+
     public void upload(
             String bucketName,
             String key,
@@ -35,7 +38,17 @@ public class AWSS3FileHandler {
         try {
             log.info("(upload) Queued file for upload");
             Upload upload = transferManager.upload(putObjectRequest);
-            upload.waitForCompletion();
+            //upload.waitForCompletion();
+            // Track the upload progress using TransferProgress
+            while (!upload.isDone()) {
+                TransferProgress progress = upload.getProgress();
+                System.out.println("Total bytes transferred: " + progress.getBytesTransferred());
+                System.out.println("Total bytes to transfer: " + progress.getTotalBytesToTransfer());
+                System.out.println("Percentage completed: " + progress.getPercentTransferred() + "%");
+                // System.out.println("Transfer speed: " + progress.bytesPerSecond() + " bytes/s");
+                // A short sleep here to avoid high CPU usage during the loop
+                Thread.sleep(5000);
+            }
             if(upload.isDone()) {
                 log.info("(upload) File Upload Completed");
             }
