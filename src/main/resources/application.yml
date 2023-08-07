@@ -2,7 +2,21 @@
 server:
   port: ${PORT}
 
+
+spring-boot:
+  run:
+  # Set initial heap size
+  # jvmArguments: -Xms512m
+  # Set maximum heap size
+    jvmArguments: -Xmx4096m
+
 spring:
+  servlet:
+    multipart:
+      # 1 GB
+      max-file-size: 1073741824
+      #4 GB
+      max-request-size: 4294967296
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
