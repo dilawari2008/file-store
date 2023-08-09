@@ -1,7 +1,6 @@
 package com.example.filestore.module.fileHandler.domain;
 
 import com.example.enums.FileUploadStatus;
-import software.amazon.ion.Decimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
