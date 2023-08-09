@@ -32,6 +32,11 @@ public class FileController {
         return new ResponseEntity<>(fileService.getAllFiles(pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/search-files")
+    public ResponseEntity<Page<?>> getAllFiles(Pageable pageable,@RequestParam(name = "searchKeyword", required = false) String searchKeyword) {
+        return new ResponseEntity<>(fileService.searchAllFiles(pageable, searchKeyword), HttpStatus.OK);
+    }
+
     @PostMapping("/upload")
     public ResponseEntity uploadFile(@RequestParam("file")MultipartFile multipartFile) {
         try {

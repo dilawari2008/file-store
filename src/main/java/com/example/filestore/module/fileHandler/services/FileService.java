@@ -44,6 +44,11 @@ public class FileService {
         return fileInfoList;
     }
 
+    public Page<FileInfo> searchAllFiles(Pageable pageable, String searchKeyword) {
+        Page<FileInfo> fileInfoList = fileRepository.searchAllActive(searchKeyword, pageable);
+        return fileInfoList;
+    }
+
     public void uploadFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty())
             throw new IllegalStateException("Cannot upload empty file");
