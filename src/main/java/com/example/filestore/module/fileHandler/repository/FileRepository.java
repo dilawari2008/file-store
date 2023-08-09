@@ -24,4 +24,7 @@ public interface FileRepository extends JpaRepository<FileInfo, Long> {
 
     @Query(value = "select u from FileInfo u where (u.deleted is null or u.deleted = false) and lower(u.fileName) like lower(concat('%', ?1, '%'))")
     Page<FileInfo> searchAllActive(String searchKeyword, Pageable pageable);
+
+    @Query(value = "update FileInfo u set u.fileUploadStatus = ?2 where id = ?1")
+    void updateFileUploadStatus(Long id, String status);
 }
