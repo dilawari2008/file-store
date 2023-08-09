@@ -22,6 +22,7 @@ code to know where the multipart arrived
 observe cpu/ memory usage when using TransferManager class instead PutObject
 use @Getter and @Setter from lombok
 api for sending progress to frontend
+presigned url
 
 authentication
 
