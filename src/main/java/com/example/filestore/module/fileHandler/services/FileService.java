@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.enums.FileUploadStatus;
+import com.example.filestore.configuration.AWSS3FileHandler;
 import com.example.filestore.module.fileHandler.domain.FileInfo;
 import com.example.filestore.module.fileHandler.repository.FileRepository;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class FileService {
 
         try {
             // Uploading file to s3
-            awss3FileHandler.upload(bucketName, fileName, metadata, multipartFile.getInputStream());
+            awss3FileHandler.upload(bucketName, fileName, metadata, multipartFile.getInputStream(), savedFile.getId());
         } catch (Exception e) {
             log.error("(uploadFile) Exception occurred while attempting to upload file : {}", e.toString());
             fileRepository.updateFileUploadStatus(savedFile.getId(), FileUploadStatus.FAILED.toString());

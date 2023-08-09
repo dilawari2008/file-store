@@ -1,5 +1,8 @@
 package com.example.filestore.module.fileHandler.domain;
 
+import com.example.enums.FileUploadStatus;
+import software.amazon.ion.Decimal;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,20 +15,25 @@ public class FileInfo {
     private Long id;
     private String fileName;
     private String fileType;
+    private Long fileSize;
     private String userName;
     private Date uploadTime;
     private String bucketName;
     private Boolean deleted;
+    private String fileUploadStatus;
 
     public FileInfo() {
     }
 
-    public FileInfo(String fileName, String fileType, String userName, Date uploadTime, String bucketName) {
+    public FileInfo(String fileName, String fileType, Long fileSize, String userName, Date uploadTime, String bucketName) {
         this.fileName = fileName;
         this.fileType = fileType;
+        this.fileSize = fileSize;
         this.userName = userName;
         this.uploadTime = uploadTime;
         this.bucketName = bucketName;
+        this.deleted = false;
+        this.fileUploadStatus = FileUploadStatus.QUEUED.toString();
     }
 
     public Long getId() {
@@ -85,16 +93,34 @@ public class FileInfo {
         this.deleted = deleted;
     }
 
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public String getFileUploadStatus() {
+        return fileUploadStatus;
+    }
+
+    public void setFileUploadStatus(String fileUploadStatus) {
+        this.fileUploadStatus = fileUploadStatus;
+    }
+
     @Override
     public String toString() {
         return "FileInfo{" +
                 "id=" + id +
                 ", fileName='" + fileName + '\'' +
                 ", fileType='" + fileType + '\'' +
+                ", fileSize=" + fileSize +
                 ", userName='" + userName + '\'' +
                 ", uploadTime=" + uploadTime +
-                ", fileUrl='" + bucketName + '\'' +
+                ", bucketName='" + bucketName + '\'' +
                 ", deleted=" + deleted +
+                ", fileUploadStatus='" + fileUploadStatus + '\'' +
                 '}';
     }
 }

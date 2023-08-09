@@ -1,14 +1,16 @@
-package com.example.filestore.module.fileHandler.services;
+package com.example.filestore.configuration;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.TransferProgress;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.example.enums.FileUploadStatus;
+import com.example.filestore.module.fileHandler.repository.FileRepository;
+import com.example.filestore.module.fileHandler.services.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +26,17 @@ public class AWSS3FileHandler {
     @Autowired
     private AmazonS3 amazonS3;
 
+    @Autowired
+    private FileRepository fileRepository;
 
 
-    public void upload(
-            String bucketName,
-            String key,
-            ObjectMetadata objectMetadata,
-            InputStream inputStream) {
+
+    public void upload(String bucketName, String key, ObjectMetadata objectMetadata, InputStream inputStream, Long fileId) {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, inputStream, objectMetadata);
-        TransferManager transferManager = TransferManagerBuilder.standard()
-                .withS3Client(amazonS3)
-                .build();
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         try {
-            log.info("(upload) Queued file for upload");
+            log.info("(upload) Queued file {} for upload", key);
+            fileRepository.updateFileUploadStatus(fileId, FileUploadStatus.PROCESSING.toString());
             Upload upload = transferManager.upload(putObjectRequest);
             //upload.waitForCompletion();
             // Track the upload progress using TransferProgress
@@ -50,12 +50,13 @@ public class AWSS3FileHandler {
                 Thread.sleep(5000);
             }
             if(upload.isDone()) {
-                log.info("(upload) File Upload Completed");
+                fileRepository.updateFileUploadStatus(fileId, FileUploadStatus.SUCCESS.toString());
+                log.debug("(upload) File Upload Completed");
             }
         } catch (InterruptedException e) {
             log.error("(upload) Interrupted Exception", e.getStackTrace());
+            fileRepository.updateFileUploadStatus(fileId, FileUploadStatus.FAILED.toString());
         }
-        //return amazonS3.putObject(bucketName, key, inputStream, objectMetadata);
     }
 
     public S3Object download(String bucketName, String key) {
