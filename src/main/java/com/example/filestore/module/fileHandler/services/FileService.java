@@ -1,9 +1,9 @@
 package com.example.filestore.module.fileHandler.services;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.example.enums.FileUploadStatus;
 import com.example.filestore.module.fileHandler.domain.FileInfo;
 import com.example.filestore.module.fileHandler.repository.FileRepository;
 import org.slf4j.Logger;
@@ -51,12 +51,12 @@ public class FileService {
 
     public void uploadFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty())
-            throw new IllegalStateException("Cannot upload empty file");
+            throw new IllegalStateException("(uploadFile) Cannot upload empty file");
 
-        log.info("(uploadFile) File size (in bytes) : " + multipartFile.getSize());
+        log.debug("(uploadFile) File details to be uploaded : name {} , file-type {}, file-size (in bytes) {} ", multipartFile.getName(), multipartFile.getContentType(), multipartFile.getSize());
 
-        log.info("(uploadFile) multipartFile.getSize() : "+ multipartFile.getSize());
-        log.info("(uploadFile) multipartFile.getInputStream().available() : "+ multipartFile.getInputStream().available());
+        // multipartFile.getInputStream().available() - how much can be read without blocking (stopping, or waiting for the data to be available like buffering)
+        // log.debug("(uploadFile) multipartFile.getInputStream().available() : "+ multipartFile.getInputStream().available());
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
@@ -64,13 +64,16 @@ public class FileService {
 
         String fileName = String.format("%s", multipartFile.getOriginalFilename());
 
-        // Uploading file to s3
-        /*PutObjectResult putObjectResult = */awss3FileHandler.upload(
-                bucketName, fileName, metadata, multipartFile.getInputStream());
+        // enter the details in db
+        FileInfo savedFile = fileRepository.save(new FileInfo(fileName, multipartFile.getContentType(),multipartFile.getSize(), "", new Date(), bucketName));
 
-        //log this object - putObjectResult
-
-        fileRepository.save(new FileInfo(fileName, "", "", new Date(), bucketName));
+        try {
+            // Uploading file to s3
+            awss3FileHandler.upload(bucketName, fileName, metadata, multipartFile.getInputStream());
+        } catch (Exception e) {
+            log.error("(uploadFile) Exception occurred while attempting to upload file : {}", e.toString());
+            fileRepository.updateFileUploadStatus(savedFile.getId(), FileUploadStatus.FAILED.toString());
+        }
     }
 
     private S3Object getDownloadObject(Long fileId) {
