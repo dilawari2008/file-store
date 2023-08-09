@@ -41,7 +41,7 @@ public class FileController {
     public ResponseEntity uploadFile(@RequestParam("file")MultipartFile multipartFile) {
         try {
             fileService.uploadFile(multipartFile);
-            return new ResponseEntity("File being uploaded...", HttpStatus.OK);
+            return new ResponseEntity("File has been queued for upload!", HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity("Input Error", HttpStatus.BAD_REQUEST);
         }
@@ -49,8 +49,8 @@ public class FileController {
 
     @GetMapping("/download/{id}")
     public ResponseEntity download(@PathVariable("id") Long fileId) {
-        fileService.download(fileId);
-        return new ResponseEntity("Download complete...", HttpStatus.OK);
+        String downloadMessage = fileService.download(fileId);
+        return new ResponseEntity(downloadMessage, HttpStatus.OK);
     }
 
     @PostMapping("/delete/{id}")

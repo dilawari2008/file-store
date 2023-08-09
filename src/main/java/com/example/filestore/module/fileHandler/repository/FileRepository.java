@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileInfo, Long> {
@@ -20,6 +21,9 @@ public interface FileRepository extends JpaRepository<FileInfo, Long> {
 
     @Query(value = "select u from FileInfo u where u.deleted is null or u.deleted=false")
     Page<FileInfo> findAllActive(Pageable pageable);
+
+    @Query(value = "select u from FileInfo u where (u.deleted is null or u.deleted=false) and id = ?1")
+    Optional<FileInfo> findByIdIfActive(Long id);
 
     @Query(value = "select u from FileInfo u where (u.deleted is null or u.deleted = false) and lower(u.fileName) like lower(concat('%', ?1, '%'))")
     Page<FileInfo> searchAllActive(String searchKeyword, Pageable pageable);

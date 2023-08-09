@@ -78,7 +78,7 @@ public class FileService {
     }
 
     private S3Object getDownloadObject(Long fileId) {
-        Optional<FileInfo> fileInfo = fileRepository.findById(fileId);
+        Optional<FileInfo> fileInfo = fileRepository.findByIdIfActive(fileId);
         if(fileInfo.isPresent())
             return awss3FileHandler.download(fileInfo.get().getBucketName(),fileInfo.get().getFileName());
         else
@@ -86,8 +86,9 @@ public class FileService {
     }
 
     //Squash exceptions at the end
-    public void download(Long fileId) {
+    public String download(Long fileId) {
         S3Object s3Object = getDownloadObject(fileId);
+        if(s3Object == null) return "File does not exist or is deleted";
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         FileOutputStream outputStream = null;
         try {
@@ -119,6 +120,8 @@ public class FileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return "Download queued...";
     }
 
 
@@ -126,8 +129,8 @@ public class FileService {
         Optional<FileInfo> fileInfo = fileRepository.findById(fileId);
         if(fileInfo.isPresent()) {
             awss3FileHandler.deleteFile(bucketName, fileInfo.get().getFileName());
+            fileRepository.deleteFile(fileId);
         }
-        fileRepository.deleteFile(fileId);
     }
 
 
