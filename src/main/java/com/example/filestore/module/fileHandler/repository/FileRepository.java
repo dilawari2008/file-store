@@ -1,6 +1,8 @@
 package com.example.filestore.module.fileHandler.repository;
 
 import com.example.filestore.module.fileHandler.domain.FileInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +20,5 @@ public interface FileRepository extends JpaRepository<FileInfo, Long> {
     void deleteFile(Long fileId);
 
     @Query(value = "select u from FileInfo u where u.deleted is null or u.deleted=false")
-    List<FileInfo> findAllActive();
+    Page<FileInfo> findAllActive(Pageable pageable);
 }

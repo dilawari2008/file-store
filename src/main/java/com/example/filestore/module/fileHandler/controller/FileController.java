@@ -4,6 +4,8 @@ import com.example.filestore.module.fileHandler.services.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +29,8 @@ public class FileController {
     }
 
     @GetMapping("/files")
-    public ResponseEntity<List<?>> getAllFiles() {
-        return new ResponseEntity<>(fileService.getAllFiles(), HttpStatus.OK);
+    public ResponseEntity<Page<?>> getAllFiles(Pageable pageable) {
+        return new ResponseEntity<>(fileService.getAllFiles(pageable), HttpStatus.OK);
     }
 
     @PostMapping("/upload")
