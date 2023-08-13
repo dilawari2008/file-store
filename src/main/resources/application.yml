@@ -49,3 +49,4 @@ aws:
 #File
 download:
   directory: ${FILE_DOWNLOAD_DIRECTORY}
+  buffer_size: ${BUFFER_SIZE}

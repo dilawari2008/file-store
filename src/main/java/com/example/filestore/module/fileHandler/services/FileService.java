@@ -39,6 +39,9 @@ public class FileService {
     @Value("${download.directory}")
     private String downloadDirectory;
 
+    @Value("${download.buffer_size}")
+    private Integer bufferSize;
+
     // paginate
     public Page<FileInfo> getAllFiles(Pageable pageable) {
         Page<FileInfo> fileInfoList = fileRepository.findAllActive(pageable);
@@ -93,7 +96,8 @@ public class FileService {
         try {
             outputStream = new FileOutputStream(new File(downloadDirectory+s3Object.getKey()));
 
-            byte[] buffer = new byte[4096];
+            // how many bytes to be read from the inputStream in one go, after which the next network call can be made to fetch more info
+            byte[] buffer = new byte[bufferSize];
             int bytesRead;
             while (true) {
                 if (!((bytesRead = inputStream.read(buffer)) != -1)) break;
