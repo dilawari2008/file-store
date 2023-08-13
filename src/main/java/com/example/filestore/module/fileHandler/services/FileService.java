@@ -85,7 +85,6 @@ public class FileService {
             return null;
     }
 
-    //Squash exceptions at the end
     public String download(Long fileId) {
         S3Object s3Object = getDownloadObject(fileId);
         if(s3Object == null) return "File does not exist or is deleted";
@@ -93,30 +92,19 @@ public class FileService {
         FileOutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(new File(downloadDirectory+s3Object.getKey()));
+
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while (true) {
+                if (!((bytesRead = inputStream.read(buffer)) != -1)) break;
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+            inputStream.close();
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        }
-        byte[] buffer = new byte[4096];
-        int bytesRead;
-        while (true) {
-            try {
-                if (!((bytesRead = inputStream.read(buffer)) != -1)) break;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                outputStream.write(buffer, 0, bytesRead);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            inputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
