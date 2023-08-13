@@ -1,4 +1,4 @@
-package com.example.filestore.configuration;
+package com.example.configuration;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
