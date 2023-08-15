@@ -1,4 +1,4 @@
-package com.example.configuration;
+package com.example.filestore.configuration;
 
 
 import com.example.filestore.module.fileHandler.controller.FileController;

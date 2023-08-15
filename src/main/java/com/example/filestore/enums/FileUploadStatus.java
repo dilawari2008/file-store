@@ -1,4 +1,4 @@
-package com.example.enums;
+package com.example.filestore.enums;
 
 public enum FileUploadStatus {
     QUEUED("Queued"),

@@ -3,7 +3,7 @@ package com.example.filestore.module.fileHandler.services;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.example.enums.FileUploadStatus;
+import com.example.filestore.enums.FileUploadStatus;
 import com.example.filestore.module.fileHandler.domain.FileInfo;
 import com.example.filestore.module.fileHandler.repository.FileRepository;
 import org.slf4j.Logger;
