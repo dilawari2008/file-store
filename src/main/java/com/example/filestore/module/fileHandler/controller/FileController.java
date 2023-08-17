@@ -33,7 +33,7 @@ public class FileController {
     }
 
     @GetMapping("/search-files")
-    public ResponseEntity<Page<?>> getAllFiles(Pageable pageable,@RequestParam(name = "searchKeyword", required = false) String searchKeyword) {
+    public ResponseEntity<Page<?>> searchAllFiles(Pageable pageable,@RequestParam(name = "searchKeyword", required = false) String searchKeyword) {
         return new ResponseEntity<>(fileService.searchAllFiles(pageable, searchKeyword), HttpStatus.OK);
     }
 
@@ -57,6 +57,11 @@ public class FileController {
     public ResponseEntity delete(@PathVariable("id") Long fileId) {
         fileService.deleteFile(fileId);
         return new ResponseEntity("Queueing delete...", HttpStatus.OK);
+    }
+
+    @GetMapping("/presigned-url/{key}")
+    public ResponseEntity<String> getPresignedUrl(@PathVariable("key") String key) {
+        return new ResponseEntity<>(fileService.presignedS3Url(key), HttpStatus.OK);
     }
 
 }

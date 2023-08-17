@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Date;
 
 @Service
 public class AWSS3FileHandler {
@@ -64,5 +66,16 @@ public class AWSS3FileHandler {
 
     public void deleteFile(String bucketName, String key) {
         amazonS3.deleteObject(bucketName, key);
+    }
+
+    public String presignedS3Url(String bucketName, String key) {
+
+        // Set expiration time for the pre-signed URL (in milliseconds)
+        Date expiration = new Date(System.currentTimeMillis() + 3600000); // 1 hour from now
+
+        // Generate the pre-signed URL
+        URL url = amazonS3.generatePresignedUrl(bucketName, key, expiration);
+
+        return url.toString();
     }
 }

@@ -124,5 +124,9 @@ public class FileService {
         }
     }
 
+    public String presignedS3Url(String key) {
+        return awss3FileHandler.presignedS3Url(bucketName, key);
+    }
+
 
 }
