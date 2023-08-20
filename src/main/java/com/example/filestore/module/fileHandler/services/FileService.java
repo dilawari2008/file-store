@@ -148,7 +148,6 @@ public class FileService {
 
     public PresignedUrlDto presignedS3Url(String key, String type, Long fileSize) {
         String presignedUrl = awss3FileHandler.presignedS3Url(bucketName, key);
-        // enter the details in db
         FileInfo savedFile = fileRepository.save(new FileInfo(key, type, fileSize, "", new Date(), bucketName));
 
         return new PresignedUrlDto(presignedUrl, savedFile.getId());
