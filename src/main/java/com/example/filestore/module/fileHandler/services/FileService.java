@@ -102,9 +102,10 @@ public class FileService {
             return null;
     }
 
-    public String download(Long fileId) {
+    @Async
+    public CompletableFuture<String> asyncDownload(Long fileId) {
         S3Object s3Object = getDownloadObject(fileId);
-        if(s3Object == null) return "File does not exist or is deleted";
+        if(s3Object == null) return CompletableFuture.completedFuture("File does not exist or is deleted");
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         FileOutputStream outputStream = null;
         try {
@@ -127,7 +128,12 @@ public class FileService {
             throw new RuntimeException(e);
         }
 
-        return "Download queued...";
+        return CompletableFuture.completedFuture("Download completed!");
+    }
+
+    public String download(Long fileId) {
+        asyncDownload(fileId);
+        return "Download Queued";
     }
 
 
