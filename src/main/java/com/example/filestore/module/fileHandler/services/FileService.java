@@ -12,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FileService {
@@ -52,6 +51,16 @@ public class FileService {
         return fileInfoList;
     }
 
+    @Async
+    private CompletableFuture<String> uploadFileAsync(String bucketName, String fileName, ObjectMetadata metadata, InputStream inputStream, Long id) throws InterruptedException {
+        log.debug("(uploadFileAsync) Initiating Uploading of file to S3");
+        awss3FileHandler.upload(bucketName, fileName, metadata, inputStream, id);
+        // Artificial delay of 1s for demonstration purposes
+        Thread.sleep(1000L);
+        log.debug("(uploadFileAsync) Completed Uploading of file to S3");
+        return CompletableFuture.completedFuture("Finished uploading file to S3");
+    }
+
     public void uploadFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty())
             throw new IllegalStateException("(uploadFile) Cannot upload empty file");
@@ -72,7 +81,13 @@ public class FileService {
 
         try {
             // Uploading file to s3
-            awss3FileHandler.upload(bucketName, fileName, metadata, multipartFile.getInputStream(), savedFile.getId());
+            log.debug("(uploadFile) Initiating Uploading of file to S3");
+            CompletableFuture<String> stringCompletableFuture = uploadFileAsync(bucketName, fileName, metadata, multipartFile.getInputStream(), savedFile.getId());
+            if(stringCompletableFuture.isDone()) {
+                String uploadMessage = stringCompletableFuture.get();
+                log.debug("(uploadFile) {}", uploadMessage);
+            }
+            log.debug("(uploadFile) Initiated Uploading of file to S3");
         } catch (Exception e) {
             log.error("(uploadFile) Exception occurred while attempting to upload file : {}", e.toString());
             fileRepository.updateFileUploadStatus(savedFile.getId(), FileUploadStatus.FAILED.toString());
