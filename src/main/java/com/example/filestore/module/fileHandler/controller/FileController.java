@@ -1,5 +1,6 @@
 package com.example.filestore.module.fileHandler.controller;
 
+import com.example.filestore.module.fileHandler.dto.PresignedUrlDto;
 import com.example.filestore.module.fileHandler.services.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,14 @@ public class FileController {
         return new ResponseEntity("Queueing delete...", HttpStatus.OK);
     }
 
-    @GetMapping("/presigned-url/{key}")
-    public ResponseEntity<String> getPresignedUrl(@PathVariable("key") String key) {
-        return new ResponseEntity<>(fileService.presignedS3Url(key), HttpStatus.OK);
+    @GetMapping("/presigned-url/{key}/{type}/{fileSize}")
+    public ResponseEntity<PresignedUrlDto> getPresignedUrl(@PathVariable("key") String key, @PathVariable("type") String type, @PathVariable("fileSize") Long fileSize) {
+        return new ResponseEntity<>(fileService.presignedS3Url(key, type, fileSize), HttpStatus.OK);
+    }
+
+    @PutMapping("/presigned-url/status/{id}/{status}")
+    public ResponseEntity<String> getPresignedUrl(@PathVariable("id") Long id, @PathVariable("status") String status) {
+        return new ResponseEntity<>(fileService.statusUpdate(id, status), HttpStatus.OK);
     }
 
 }

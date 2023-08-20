@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.filestore.enums.FileUploadStatus;
 import com.example.filestore.module.fileHandler.domain.FileInfo;
+import com.example.filestore.module.fileHandler.dto.PresignedUrlDto;
 import com.example.filestore.module.fileHandler.repository.FileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +146,17 @@ public class FileService {
         }
     }
 
-    public String presignedS3Url(String key) {
-        return awss3FileHandler.presignedS3Url(bucketName, key);
+    public PresignedUrlDto presignedS3Url(String key, String type, Long fileSize) {
+        String presignedUrl = awss3FileHandler.presignedS3Url(bucketName, key);
+        // enter the details in db
+        FileInfo savedFile = fileRepository.save(new FileInfo(key, type, fileSize, "", new Date(), bucketName));
+
+        return new PresignedUrlDto(presignedUrl, savedFile.getId());
+    }
+
+    public String statusUpdate(Long id, String status) {
+        fileRepository.updateFileUploadStatus(id, status);
+        return "Status Updated";
     }
 
 
