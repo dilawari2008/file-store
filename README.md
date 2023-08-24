@@ -3,16 +3,16 @@
 
 TODOs
 
-make upload and download asynchronous in Completeable future
-use ProgressListener instead of while loop
-presigned url
+api to log that file with presigned url has been uploaded
+
 authentication
-change filename to username/filename/date
+change filename to username/filename
 post authentication - allow only 1 file name per user
 
 
 write a v2 for upload
 set log levels
+use ProgressListener instead of while loop
 
 error msgs as file already exists
 
