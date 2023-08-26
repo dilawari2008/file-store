@@ -4,7 +4,7 @@
 TODOs
 
 authentication
-post authentication - allow only 1 file name per user
+post authentication - allow only 1 file name per user - both through code and db constraint
 
 
 write a v2 for upload
