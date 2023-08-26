@@ -3,8 +3,6 @@
 
 TODOs
 
-api to log that file with presigned url has been uploaded
-
 authentication
 change filename to username/filename
 post authentication - allow only 1 file name per user
