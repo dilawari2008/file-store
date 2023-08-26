@@ -7,6 +7,7 @@ import com.example.filestore.enums.FileUploadStatus;
 import com.example.filestore.module.fileHandler.domain.FileInfo;
 import com.example.filestore.module.fileHandler.dto.PresignedUrlDto;
 import com.example.filestore.module.fileHandler.repository.FileRepository;
+import com.example.filestore.module.user.auth.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,7 @@ public class FileService {
         try {
             // Uploading file to s3
             log.debug("(uploadFile) Initiating Uploading of file to S3");
-            CompletableFuture<String> stringCompletableFuture = uploadFileAsync(bucketName, fileName, metadata, multipartFile.getInputStream(), savedFile.getId());
+            CompletableFuture<String> stringCompletableFuture = uploadFileAsync(bucketName, SecurityUtils.getCurrentUser().getUsername().toString() + fileName.toString(), metadata, multipartFile.getInputStream(), savedFile.getId());
             if(stringCompletableFuture.isDone()) {
                 String uploadMessage = stringCompletableFuture.get();
                 log.debug("(uploadFile) {}", uploadMessage);
