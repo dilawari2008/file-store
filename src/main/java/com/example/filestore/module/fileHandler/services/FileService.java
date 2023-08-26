@@ -78,13 +78,16 @@ public class FileService {
 
         String fileName = String.format("%s", multipartFile.getOriginalFilename());
 
+        // change filename to username+filename
+        fileName = SecurityUtils.getCurrentUser().getUsername().toString() + fileName.toString();
+
         // enter the details in db
-        FileInfo savedFile = fileRepository.save(new FileInfo(fileName, multipartFile.getContentType(),multipartFile.getSize(), "", new Date(), bucketName));
+        FileInfo savedFile = fileRepository.save(new FileInfo(fileName, multipartFile.getContentType(),multipartFile.getSize(), SecurityUtils.getCurrentUser().getUsername(), new Date(), bucketName));
 
         try {
             // Uploading file to s3
             log.debug("(uploadFile) Initiating Uploading of file to S3");
-            CompletableFuture<String> stringCompletableFuture = uploadFileAsync(bucketName, SecurityUtils.getCurrentUser().getUsername().toString() + fileName.toString(), metadata, multipartFile.getInputStream(), savedFile.getId());
+            CompletableFuture<String> stringCompletableFuture = uploadFileAsync(bucketName, fileName, metadata, multipartFile.getInputStream(), savedFile.getId());
             if(stringCompletableFuture.isDone()) {
                 String uploadMessage = stringCompletableFuture.get();
                 log.debug("(uploadFile) {}", uploadMessage);
