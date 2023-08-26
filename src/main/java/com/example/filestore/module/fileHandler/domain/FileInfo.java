@@ -1,5 +1,7 @@
 package com.example.filestore.module.fileHandler.domain;
 
+import javax.persistence.*;
+
 import com.example.filestore.enums.FileUploadStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "userName", "fileName" }) })
 public class FileInfo {
     @Id
     @GeneratedValue
